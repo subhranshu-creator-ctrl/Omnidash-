@@ -1,2 +1,11 @@
-import { PlaceholderPage } from "@/components/placeholder-page"
-export default function Page(){return <PlaceholderPage slug="calendar"/>}
+import type { Metadata } from "next"
+import { PlanningWorkspace } from "@/components/planning/planning-workspace"
+
+export const metadata: Metadata = {
+  title: "Calendar | OmniDash",
+  description: "Plan your time in OmniDash.",
+}
+
+export default function Page() {
+  return <PlanningWorkspace mode="calendar" />
+}
