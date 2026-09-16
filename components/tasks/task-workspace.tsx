@@ -20,7 +20,12 @@ export function TaskWorkspace({ initialTasks }: { initialTasks: Task[] }) {
     if (!title.trim()) return
     setSaving(true)
     const supabase = createClient()
-    const { data, error } = await supabase.from("tasks").insert({ title: title.trim(), status: "inbox", priority: "normal" }).select("id,title,status,priority,due_at").single()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      setSaving(false)
+      return
+    }
+    const { data, error } = await supabase.from("tasks").insert({ user_id: user.id, title: title.trim(), status: "inbox", priority: "normal" }).select("id,title,status,priority,due_at").single()
     if (!error && data) {
       setTasks((current) => [data, ...current])
       setTitle("")
