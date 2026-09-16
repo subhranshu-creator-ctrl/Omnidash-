@@ -20,7 +20,12 @@ export default function LoginPage() {
     setError("")
     const { error } = await createClient().auth.signInWithPassword({ email, password })
     if (error) setError(error.message.toLowerCase().includes("confirm") ? "Please confirm your email before signing in." : "Invalid email or password.")
-    else router.push("/dashboard")
+    else {
+      const nextPath = new URLSearchParams(window.location.search).get("next")
+      const destination = nextPath && nextPath.startsWith("/") && !nextPath.startsWith("//") ? nextPath : "/dashboard"
+      router.replace(destination)
+      router.refresh()
+    }
     setLoading(false)
   }
 
