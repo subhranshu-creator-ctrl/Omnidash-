@@ -1,3 +1,4 @@
+import { createGoogleGenerativeAI } from "@ai-sdk/google"
 import { generateText } from "ai"
 import { z } from "zod"
 
@@ -12,8 +13,14 @@ export async function POST(request: Request) {
       return Response.json({ error: "Enter a message to continue." }, { status: 400 })
     }
 
+    const apiKey = process.env.GEMINI_API_KEY
+    if (!apiKey) {
+      return Response.json({ error: "GEMINI_API_KEY is missing from the server environment." }, { status: 503 })
+    }
+
+    const google = createGoogleGenerativeAI({ apiKey })
     const result = await generateText({
-      model: "google/gemini-2.5-flash",
+      model: google("gemini-2.5-flash"),
       system: "You are Omni AI, the focused assistant inside OmniDash. Be concise, practical, and honest. You only know the user's request and must not claim to have accessed tasks, notes, calendars, or other private data unless it was explicitly provided in the conversation. Suggest actions, but do not claim to have completed them.",
       prompt: parsed.data.message,
       maxOutputTokens: 700,
