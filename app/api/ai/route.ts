@@ -2,6 +2,9 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google"
 import { generateText } from "ai"
 import { z } from "zod"
 
+export const runtime = "nodejs"
+export const dynamic = "force-dynamic"
+
 const requestSchema = z.object({
   message: z.string().trim().min(1).max(2000),
 })
@@ -13,9 +16,9 @@ export async function POST(request: Request) {
       return Response.json({ error: "Enter a message to continue." }, { status: 400 })
     }
 
-    const apiKey = process.env.GEMINI_API_KEY
+    const apiKey = process.env.GEMINI_API_KEY ?? process.env.GOOGLE_GENERATIVE_AI_API_KEY
     if (!apiKey) {
-      return Response.json({ error: "GEMINI_API_KEY is missing from the server environment." }, { status: 503 })
+      return Response.json({ error: "Add GEMINI_API_KEY to the Vercel environment, then redeploy." }, { status: 503 })
     }
 
     const google = createGoogleGenerativeAI({ apiKey })
