@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { FormEvent, useState } from "react"
 import { ArrowRight, Sparkles } from "lucide-react"
 import { Button, Card, Input } from "@/components/ui"
