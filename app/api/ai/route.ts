@@ -23,14 +23,19 @@ export async function POST(request: Request) {
 
     const google = createGoogleGenerativeAI({ apiKey })
     const result = await generateText({
-      model: google("gemini-2.5-flash"),
+      model: google("gemini-3.6-flash"),
       system: "You are Omni AI, the focused assistant inside OmniDash. Be concise, practical, and honest. You only know the user's request and must not claim to have accessed tasks, notes, calendars, or other private data unless it was explicitly provided in the conversation. Suggest actions, but do not claim to have completed them.",
       prompt: parsed.data.message,
       maxOutputTokens: 700,
     })
 
     return Response.json({ answer: result.text })
-  } catch {
-    return Response.json({ error: "Omni AI could not respond right now. Try again." }, { status: 500 })
+  } catch (error) {
+    console.error("[v0] Omni AI request failed", error)
+    const message = error instanceof Error ? error.message : "Unknown provider error"
+    const isAuthError = /api key|unauthorized|401|403|permission/i.test(message)
+    return Response.json({
+      error: isAuthError ? "Gemini rejected the API key. Check that it is active and enabled for the deployment." : "Gemini could not respond right now. Please try again.",
+    }, { status: isAuthError ? 502 : 502 })
   }
 }
